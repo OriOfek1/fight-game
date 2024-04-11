@@ -102,6 +102,7 @@ class Fighter extends Sprite {
       canvas.height - 120
     ) {
       this.velocity.y = 0;
+      this.position.y = 306;
     } else {
       this.velocity.y += gravity;
     }
@@ -115,9 +116,98 @@ class Fighter extends Sprite {
   }
 
   attack() {
+    if(this.currentDirection === 'left'){
+      this.switchSprite('attack1L')
+    }
+    if(this.currentDirection === 'right'){
+      this.switchSprite('attack1R');
+    }
+
     this.isAttacking = true;
     setTimeout(() => {
       this.isAttacking = false;
     }, 100);
+  }
+  switchSprite(sprite) {
+     // overriding all other animations with the attack animation
+      if (
+        this.image === this.sprites.attack1R.image &&
+        this.framesCurrent < this.sprites.attack1R.framesMax - 1
+      )
+        return
+     
+      if (
+        this.image === this.sprites.attack1L.image &&
+        this.framesCurrent < this.sprites.attack1L.framesMax - 1
+      )
+        return
+     
+     
+
+    switch (sprite) {
+      case 'standL':
+        if (this.image !== this.sprites.standL.image) {
+          this.image = this.sprites.standL.image
+          this.framesHold = 30
+          this.framesMax = this.sprites.standL.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+        case 'standR':
+        if (this.image !== this.sprites.standR.image) {
+          this.image = this.sprites.standR.image
+          this.framesHold = 30
+          this.framesMax = this.sprites.standR.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+      case 'walkL':
+        if (this.image !== this.sprites.walkL.image) {
+          this.image = this.sprites.walkL.image
+          this.framesHold = 5 
+          this.framesMax = this.sprites.walkL.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+        case 'walkR':
+        if (this.image !== this.sprites.walkR.image) {
+          this.image = this.sprites.walkR.image
+          this.framesHold = 5 
+          this.framesMax = this.sprites.walkR.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+      case 'jumpL':
+        if (this.image !== this.sprites.jumpL.image) {
+          this.image = this.sprites.jumpL.image
+          this.framesMax = this.sprites.jumpL.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+        case 'jumpR':
+        if (this.image !== this.sprites.jumpR.image) {
+          this.image = this.sprites.jumpR.image
+          this.framesMax = this.sprites.jumpR.framesMax
+          this.framesCurrent = 0
+        }
+        break
+
+      case 'attack1L':
+        if (this.image !== this.sprites.attack1L.image) {
+          this.image = this.sprites.attack1L.image
+          this.framesHold = 15
+          this.framesMax = this.sprites.attack1L.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+        case 'attack1R':
+        if (this.image !== this.sprites.attack1R.image) {
+          this.image = this.sprites.attack1R.image
+          this.framesHold = 15
+          this.framesMax = this.sprites.attack1R.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+    }
   }
 }

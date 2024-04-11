@@ -25,10 +25,10 @@ const dummyplayer = new Fighter({
     x: 0,
     y: 0,
   },
-  imgSrc:'img/playerSprites/stand.png',
+  imgSrc:'img/playerSprites/standL.png',
   framesMax: 4,
   offset: {
-    x:0,
+    x:0,  
     y:-83
   }
 
@@ -42,20 +42,44 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
-  imgSrc:'img/playerSprites/stand.png',
+  imgSrc:'img/playerSprites/standR.png',
   framesMax: 4,
   offset: {
     x:0,
     y:-83
   },
   sprites:{
-    stand: {
-      imgSrc:'img/playerSprites/stand.png',
+    standL: {
+      imgSrc:'img/playerSprites/standL.png',
+      framesMax: 4,
+    },
+    standR: {
+      imgSrc:'img/playerSprites/standR.png',
       framesMax: 4
     },
-      walk: {
-        imgSrc:'img/playerSprites/walk.png',
+      walkL: {
+        imgSrc:'img/playerSprites/walkL.png',
         framesMax: 5,
+    },
+    walkR: {
+      imgSrc:'img/playerSprites/walkR.png',
+      framesMax: 5
+    },
+    attack1R: {
+      imgSrc:'img/playerSprites/attack1R.png',
+      framesMax: 4,
+    },
+    attack1L: {
+      imgSrc:'img/playerSprites/attack1L.png',
+      framesMax: 4,
+    },
+    jumpL: {
+      imgSrc:'img/playerSprites/jumpL.png',
+      framesMax: 2,
+    },
+    jumpR: {
+      imgSrc:'img/playerSprites/jumpR.png',
+      framesMax: 2,
     }
   }
 });
@@ -83,14 +107,24 @@ function animate() {
 
   //player x movement
   player.velocity.x = 0;
-  if (keys.ArrowLeft.pressed && player.lastKey === 'ArrowLeft') {
-    player.image = player.sprites.walk.image;
+  
 
-    player.velocity.x = -7;
+  if (keys.ArrowLeft.pressed && player.lastKey === 'ArrowLeft') {
+    player.switchSprite('walkL')
+    player.velocity.x = -2.5;
   }
    else if (keys.ArrowRight.pressed && player.lastKey === 'ArrowRight') {
-    player.image = player.sprites.walk.image;
-    player.velocity.x = 7;
+    player.switchSprite('walkR')
+    player.velocity.x = 2.5;
+  }
+  else{
+    if(player.currentDirection === 'right'){player.switchSprite('standR');}
+    else{player.switchSprite('standL');}
+  }
+  if (player.velocity.y !== 0 && player.currentDirection === 'right') {
+    player.switchSprite('jumpR');
+  }else  if (player.velocity.y !== 0 && player.currentDirection === 'left') {
+    player.switchSprite('jumpL');
   }
 
   //collision detection
@@ -110,7 +144,7 @@ window.addEventListener('keydown', (event) => {
       player.lastKey = 'ArrowLeft';
       break;
     case 'ArrowUp':
-      player.velocity.y = -20;
+      player.velocity.y = -9;
       break;
     case ' ':
       player.attack()
