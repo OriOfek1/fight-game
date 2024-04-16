@@ -165,12 +165,14 @@ function animate() {
   if(RectangleCollison(player, mob)){
     mob.switchSprite('hit');
     if(player.currentDirection == 'right'){
+      mob.position.x += 20
       mob.velocity.x += 2
       setTimeout(() => {
         mob.velocity.x = 0;
       }, 300);
     }
     if(player.currentDirection == 'left'){
+      mob.position.x += 20
       mob.velocity.x -= 2
       setTimeout(() => {
         mob.velocity.x = 0;
@@ -184,12 +186,14 @@ function animate() {
   
   }
   if(playerHitbyMob(mob, player) && player.currentDirection === 'left'){
+    player.velocity.x += 0.1
     player.switchSprite('hitL');
   }
   else if(playerHitbyMob(mob, player) && player.currentDirection === 'right'){
+    player.velocity.x += 0.1
     player.switchSprite('hitR');
   }
-
+console.log(player.isAttacking)
 }
 
 window.addEventListener('keydown', (event) => {

@@ -124,8 +124,11 @@ class Fighter extends Sprite {
     if(this.currentDirection === 'right'){
       this.switchSprite('attack1R');
     }
-
     this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);
+
   }
   switchSprite(sprite) {
      // overriding all other animations with the attack animation
@@ -194,17 +197,17 @@ class Fighter extends Sprite {
       case 'attack1L':
         if (this.image !== this.sprites.attack1L.image) {
           this.image = this.sprites.attack1L.image
-          this.framesHold = 15
+          this.framesHold = 20
           this.framesMax = this.sprites.attack1L.framesMax
-          this.framesCurrent = 0
+          this.framesCurrent = 2
         }
         break;
         case 'attack1R':
         if (this.image !== this.sprites.attack1R.image) {
           this.image = this.sprites.attack1R.image
-          this.framesHold = 15
+          this.framesHold = 20
           this.framesMax = this.sprites.attack1R.framesMax
-          this.framesCurrent = 0
+          this.framesCurrent = 2
         }
         break;
         case 'hitL':
