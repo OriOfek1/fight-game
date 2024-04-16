@@ -47,6 +47,38 @@ const mob = new Mob({
     }
   }
 });
+const mob2 = new Mob({
+  position: {
+    x: 800,
+    y: 0,
+  },
+  velocity: {
+    x: 0,
+    y: 0,
+  },
+  imgSrc:'img/SlimeSpriteSheet/stand.png',
+  framesMax: 3,
+  offset: {
+    x:0,  
+    y:-80
+  },
+  sprites:{
+    standL: {
+      imgSrc:'img/SlimeSpriteSheet/stand.png',
+      framesMax: 3,
+    },
+    hit: {
+      imgSrc:'img/SlimeSpriteSheet/hit.png',
+      framesMax: 5
+    },
+    die: {
+      imgSrc:'img/SlimeSpriteSheet/die.png',
+      framesMax: 6
+    }
+  }
+});
+
+const mobs = [mob,mob2]
 
 const player = new Fighter({
   position: {
@@ -134,8 +166,10 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
   background.update();
   if(!mob.dead){mob.update();}
+  if(!mob2.dead){mob2.update();}
+
   player.update();
-  //player x movement
+  //player movement
   player.velocity.x = 0;
 
   if (keys.ArrowLeft.pressed && player.lastKey === 'ArrowLeft') {
@@ -162,38 +196,41 @@ function animate() {
     player.switchSprite('jumpL');
   }
   //collision detection
-  if(RectangleCollison(player, mob)){
-    mob.switchSprite('hit');
-    if(player.currentDirection == 'right'){
-      mob.position.x += 20
-      mob.velocity.x += 2
-      setTimeout(() => {
-        mob.velocity.x = 0;
-      }, 300);
-    }
-    if(player.currentDirection == 'left'){
-      mob.position.x += 20
-      mob.velocity.x -= 2
-      setTimeout(() => {
-        mob.velocity.x = 0;
-      }, 300);
-
-    }
-    setTimeout(() => {
-      mob.switchSprite('standL');
-    }, 300);
+  for(const mob of mobs){
+    if(RectangleCollison(player, mob)){
+      mob.switchSprite('hit');
+      if(player.currentDirection == 'right'){
+        mob.position.x += 20
+        mob.velocity.x += 2
+        setTimeout(() => {
+          mob.velocity.x = 0;
+        }, 300);
+      }
+      if(player.currentDirection == 'left'){
+        mob.position.x += 20
+        mob.velocity.x -= 2
+        setTimeout(() => {
+          mob.velocity.x = 0;
+        }, 300);
   
+      }
+      setTimeout(() => {
+        mob.switchSprite('standL');
+      }, 300);
+    
+    
+    }
+    if(playerHitbyMob(mob, player) && player.currentDirection === 'left'){
+      player.velocity.x += 0.1
+      player.switchSprite('hitL');
+    }
+    else if(playerHitbyMob(mob, player) && player.currentDirection === 'right'){
+      player.velocity.x += 0.1
+      player.switchSprite('hitR');
+    }
+  console.log(player.isAttacking)
+  }
   
-  }
-  if(playerHitbyMob(mob, player) && player.currentDirection === 'left'){
-    player.velocity.x += 0.1
-    player.switchSprite('hitL');
-  }
-  else if(playerHitbyMob(mob, player) && player.currentDirection === 'right'){
-    player.velocity.x += 0.1
-    player.switchSprite('hitR');
-  }
-console.log(player.isAttacking)
 }
 
 window.addEventListener('keydown', (event) => {
