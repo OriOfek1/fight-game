@@ -13,10 +13,11 @@ const background = new Sprite({
     x: 0,
     y:0
   },
-  imgSrc:'img/background.png'
+  imgSrc:'img/background.png',
+  surface: 306
 });
 
-const dummyplayer = new Fighter({
+const mob = new Mob({
   position: {
     x: 400,
     y: 0,
@@ -25,17 +26,31 @@ const dummyplayer = new Fighter({
     x: 0,
     y: 0,
   },
-  imgSrc:'img/playerSprites/standL.png',
-  framesMax: 4,
+  imgSrc:'img/SlimeSpriteSheet/stand.png',
+  framesMax: 3,
   offset: {
     x:0,  
-    y:-83
+    y:-80
+  },
+  sprites:{
+    standL: {
+      imgSrc:'img/SlimeSpriteSheet/stand.png',
+      framesMax: 3,
+    },
+    hit: {
+      imgSrc:'img/SlimeSpriteSheet/hit.png',
+      framesMax: 5
+    },
+    die: {
+      imgSrc:'img/SlimeSpriteSheet/die.png',
+      framesMax: 6
+    }
   }
-
 });
+
 const player = new Fighter({
   position: {
-    x: 0,
+    x: 200,
     y: 0,
   },
   velocity: {
@@ -46,7 +61,7 @@ const player = new Fighter({
   framesMax: 4,
   offset: {
     x:0,
-    y:-83
+    y:-75
   },
   sprites:{
     standL: {
@@ -73,12 +88,28 @@ const player = new Fighter({
       imgSrc:'img/playerSprites/attack1L.png',
       framesMax: 4,
     },
+    stabL: {
+      imgSrc:'img/playerSprites/stabL.png',
+      framesMax: 3,
+    },
+    stabR: {
+      imgSrc:'img/playerSprites/stabL.png',
+      framesMax: 3,
+    },
     jumpL: {
       imgSrc:'img/playerSprites/jumpL.png',
       framesMax: 2,
     },
     jumpR: {
       imgSrc:'img/playerSprites/jumpR.png',
+      framesMax: 2,
+    },
+    hitL: {
+      imgSrc:'img/playerSprites/hitL.png',
+      framesMax: 2,
+    },
+    hitR: {
+      imgSrc:'img/playerSprites/hitR.png',
       framesMax: 2,
     }
   }
@@ -102,20 +133,18 @@ function animate() {
   c.fillStyle = 'black';
   c.fillRect(0, 0, canvas.width, canvas.height);
   background.update();
+  if(!mob.dead){mob.update();}
   player.update();
-  // dummyplayer.update();
-
   //player x movement
   player.velocity.x = 0;
-  
 
   if (keys.ArrowLeft.pressed && player.lastKey === 'ArrowLeft') {
     player.switchSprite('walkL')
-    player.velocity.x = -2.5;
+    player.velocity.x = -2;
   }
    else if (keys.ArrowRight.pressed && player.lastKey === 'ArrowRight') {
     player.switchSprite('walkR')
-    player.velocity.x = 2.5;
+    player.velocity.x = 2;
   }
   else{
     if(player.currentDirection === 'right'){player.switchSprite('standR');}
@@ -126,9 +155,41 @@ function animate() {
   }else  if (player.velocity.y !== 0 && player.currentDirection === 'left') {
     player.switchSprite('jumpL');
   }
-
+  if (player.currentDirection === 'right' && player.position.y < background.surface) {
+    player.switchSprite('jumpR');
+  }
+  else if (player.currentDirection === 'left' && player.position.y < background.surface) {
+    player.switchSprite('jumpL');
+  }
   //collision detection
-  RectangleCollison(player, dummyplayer);
+  if(RectangleCollison(player, mob)){
+    mob.switchSprite('hit');
+    if(player.currentDirection == 'right'){
+      mob.velocity.x += 2
+      setTimeout(() => {
+        mob.velocity.x = 0;
+      }, 300);
+    }
+    if(player.currentDirection == 'left'){
+      mob.velocity.x -= 2
+      setTimeout(() => {
+        mob.velocity.x = 0;
+      }, 300);
+
+    }
+    setTimeout(() => {
+      mob.switchSprite('standL');
+    }, 300);
+  
+  
+  }
+  if(playerHitbyMob(mob, player) && player.currentDirection === 'left'){
+    player.switchSprite('hitL');
+  }
+  else if(playerHitbyMob(mob, player) && player.currentDirection === 'right'){
+    player.switchSprite('hitR');
+  }
+
 }
 
 window.addEventListener('keydown', (event) => {
@@ -144,7 +205,7 @@ window.addEventListener('keydown', (event) => {
       player.lastKey = 'ArrowLeft';
       break;
     case 'ArrowUp':
-      player.velocity.y = -9;
+      if(player.position.y == background.surface){player.velocity.y = -8;}
       break;
     case ' ':
       player.attack()

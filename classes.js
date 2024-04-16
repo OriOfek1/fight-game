@@ -1,5 +1,5 @@
 class Sprite {
-  constructor({ position, imgSrc, scale = 1, framesMax = 1, offset = {x:0, y:0} }) {
+  constructor({ height,width, position, imgSrc, scale = 1, framesMax = 1, offset = {x:0, y:0}, surface = 0}) {
     this.position = position;
     this.height = 150;
     this.width = 50;
@@ -11,6 +11,8 @@ class Sprite {
     this.framesElapsed = 0;
     this.framesHold = 10;
     this.offset = offset
+    this.surface = surface
+    this.dead = false
 
     
   }
@@ -72,7 +74,7 @@ class Fighter extends Sprite {
         x: this.position.x,
         y: this.position.y,
       },
-      width: this.width * 2,
+      width: this.width,
       height: this.height / 2,
     };
     this.color = color;
@@ -124,13 +126,10 @@ class Fighter extends Sprite {
     }
 
     this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 100);
   }
   switchSprite(sprite) {
      // overriding all other animations with the attack animation
-      if (
+      if ( 
         this.image === this.sprites.attack1R.image &&
         this.framesCurrent < this.sprites.attack1R.framesMax - 1
       )
@@ -148,7 +147,7 @@ class Fighter extends Sprite {
       case 'standL':
         if (this.image !== this.sprites.standL.image) {
           this.image = this.sprites.standL.image
-          this.framesHold = 30
+          this.framesHold = 80
           this.framesMax = this.sprites.standL.framesMax
           this.framesCurrent = 0
         }
@@ -156,7 +155,7 @@ class Fighter extends Sprite {
         case 'standR':
         if (this.image !== this.sprites.standR.image) {
           this.image = this.sprites.standR.image
-          this.framesHold = 30
+          this.framesHold = 80
           this.framesMax = this.sprites.standR.framesMax
           this.framesCurrent = 0
         }
@@ -164,7 +163,7 @@ class Fighter extends Sprite {
       case 'walkL':
         if (this.image !== this.sprites.walkL.image) {
           this.image = this.sprites.walkL.image
-          this.framesHold = 5 
+          this.framesHold = 7 
           this.framesMax = this.sprites.walkL.framesMax
           this.framesCurrent = 0
         }
@@ -172,7 +171,7 @@ class Fighter extends Sprite {
         case 'walkR':
         if (this.image !== this.sprites.walkR.image) {
           this.image = this.sprites.walkR.image
-          this.framesHold = 5 
+          this.framesHold = 7 
           this.framesMax = this.sprites.walkR.framesMax
           this.framesCurrent = 0
         }
@@ -191,7 +190,7 @@ class Fighter extends Sprite {
           this.framesCurrent = 0
         }
         break
-
+        
       case 'attack1L':
         if (this.image !== this.sprites.attack1L.image) {
           this.image = this.sprites.attack1L.image
@@ -208,6 +207,114 @@ class Fighter extends Sprite {
           this.framesCurrent = 0
         }
         break;
+        case 'hitL':
+        if (this.image !== this.sprites.hitL.image) {
+          this.image = this.sprites.hitL.image
+          this.framesHold = 15
+          this.framesMax = this.sprites.hitL.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+        case 'hitR':
+        if (this.image !== this.sprites.hitR.image) {
+          this.image = this.sprites.hitR.image
+          this.framesHold = 15
+          this.framesMax = this.sprites.hitR.framesMax
+          this.framesCurrent = 0
+        }
+        break;
     }
   }
+  
 }
+class Mob extends Sprite {
+  constructor({
+    position,
+    velocity,
+    color = "red",
+    imgSrc,
+    scale = 1,
+    framesMax = 1,
+    offset = { x: 0, y: 0 },
+    sprites
+  }) {
+    super({
+      position,
+      imgSrc,
+      scale,
+      framesMax,
+      offset,
+    });
+    this.height = 150;
+    this.width = 50;
+    this.velocity = velocity;
+    this.currentDirection = "right";
+    
+    this.color = color;
+    this.health = 100;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 10;
+    this.sprites = sprites;
+
+    for(const sprite in this.sprites){
+        sprites[sprite].image = new Image();
+        sprites[sprite].image.src = sprites[sprite].imgSrc;
+    }
+  }
+
+  update() {
+    this.draw();
+    this.animateFrames();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+
+    if (
+      this.position.y + this.height + this.velocity.y >=
+      canvas.height - 120
+    ) {
+      this.velocity.y = 0;
+      this.position.y = 306;
+    } else {
+      this.velocity.y += gravity;
+    }
+  }
+
+
+  switchSprite(sprite) {
+    if (this.health <= 0){
+      console.log("die")
+      this.framesMax = this.sprites.die.framesMax
+      this.framesHold = 5;
+      this.image = this.sprites.die.image
+      setTimeout(() => {
+        this.dead = true;
+      }, 300);
+      
+      return
+    }
+    
+    switch (sprite) {
+      
+      case 'standL':
+        if (this.image !== this.sprites.standL.image) {
+          this.image = this.sprites.standL.image
+          this.framesHold = 30
+          this.framesMax = this.sprites.standL.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+
+        case 'hit':
+        if (this.image !== this.sprites.hit.image) {
+          this.image = this.sprites.hit.image
+          this.framesHold = 5
+          this.framesMax = this.sprites.hit.framesMax
+          this.framesCurrent = 0
+        }
+        break;
+    }
+  }
+  
+}
+
